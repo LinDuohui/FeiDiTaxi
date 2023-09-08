@@ -1,5 +1,7 @@
 package com.linduohui.serviceverificationcode.controller;
 
+import com.mashibing.internalcommon.dto.ResponseResult;
+import com.mashibing.internalcommon.responese.NumberCodeResponse;
 import net.sf.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,14 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class NumberCodeController {
 
     @GetMapping("/numberCode/{size}")
-    public String numberCode(@PathVariable("size") int size){
+    public ResponseResult numberCode(@PathVariable("size") int size){
         System.out.println("验证码位数："+size);
+        double random = (Math.random()*9+1)*Math.pow(10,size-1);
+        int code = (int)random;
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code",1);
         jsonObject.put("message","success");
         JSONObject data = new JSONObject();
-        data.put("numberCode",123456);
+        data.put("numberCode",code);
         jsonObject.put("data",data.toString());
-        return jsonObject.toString();
+        NumberCodeResponse response = new NumberCodeResponse();
+        response.setNumberCode(code);
+        return ResponseResult.success(response);
     }
 }
