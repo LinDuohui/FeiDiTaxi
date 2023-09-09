@@ -25,10 +25,10 @@ public class VerificationCodeService {
     //乘客验证码的前缀
     private String verificationCodePrefix = "passenger-verification-code-";
 
-    public String generateCode(String phone){
+    public ResponseResult generateCode(String phone){
         //调用验证码服务，获取验证码
         System.out.println("调用验证码服务，获取验证码");
-        ResponseResult<NumberCodeResponse> responseResponseResult = serviceVerificationCodeClient.getNumberCode(5);
+        ResponseResult<NumberCodeResponse> responseResponseResult = serviceVerificationCodeClient.getNumberCode(6);
         int numberCode = responseResponseResult.getData().getNumberCode();
         System.out.println("remoute numbercode:"+numberCode);
         //将验证码存入redis
@@ -38,10 +38,7 @@ public class VerificationCodeService {
         //存入redis
         stringRedisTemplate.opsForValue().set(key,numberCode+"",2, TimeUnit.MINUTES);
 
-        //封装返回Json
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code",200);
-        jsonObject.put("message","success");
-        return jsonObject.toString();
+        //通过短信服务商，将对应的验证码发送到手机上，阿里短信服务，腾讯短信通，华信，容联
+        return ResponseResult.success("");
     }
 }
