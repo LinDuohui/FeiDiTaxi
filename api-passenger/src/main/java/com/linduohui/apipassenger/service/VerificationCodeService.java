@@ -1,9 +1,9 @@
 package com.linduohui.apipassenger.service;
 
 import com.linduohui.apipassenger.remote.ServiceVerificationCodeClient;
-import com.mashibing.internalcommon.dto.ResponseResult;
-import com.mashibing.internalcommon.responese.NumberCodeResponse;
-import net.sf.json.JSONObject;
+import com.linduohui.internalcommon.dto.ResponseResult;
+import com.linduohui.internalcommon.response.NumberCodeResponse;
+import com.linduohui.internalcommon.response.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,11 @@ public class VerificationCodeService {
     //乘客验证码的前缀
     private String verificationCodePrefix = "passenger-verification-code-";
 
+    /**
+     * 生成验证码
+     * @param phone
+     * @return
+     */
     public ResponseResult generateCode(String phone){
         //调用验证码服务，获取验证码
         System.out.println("调用验证码服务，获取验证码");
@@ -40,5 +45,29 @@ public class VerificationCodeService {
 
         //通过短信服务商，将对应的验证码发送到手机上，阿里短信服务，腾讯短信通，华信，容联
         return ResponseResult.success("");
+    }
+
+    /**
+     * 校验验证码
+     * @param passengerPhone
+     * @param verificationCode
+     * @return
+     */
+    public ResponseResult verificationCodeCheck(String passengerPhone, String verificationCode){
+
+        //根据手机号，查询redis中的验证码
+        System.out.println("根据手机号，查询redis中的验证码");
+
+        //校验验证码
+        System.out.println("校验验证码");
+
+        //判断原来是否有用户，并进行相应处理
+        System.out.println("判断原来是否有用户，并进行相应处理");
+
+        //颁发令牌
+        System.out.println("颁发令牌");
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken("token");
+        return ResponseResult.success(tokenResponse);
     }
 }

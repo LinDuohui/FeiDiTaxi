@@ -1,7 +1,7 @@
 package com.linduohui.serviceverificationcode.controller;
 
-import com.mashibing.internalcommon.dto.ResponseResult;
-import com.mashibing.internalcommon.responese.NumberCodeResponse;
+import com.linduohui.internalcommon.dto.ResponseResult;
+import com.linduohui.internalcommon.response.NumberCodeResponse;
 import net.sf.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
