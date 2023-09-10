@@ -1,9 +1,11 @@
 package com.linduohui.apipassenger.service;
 
 import com.linduohui.apipassenger.remote.ServiceVerificationCodeClient;
+import com.linduohui.internalcommon.constant.CommonStatusEnum;
 import com.linduohui.internalcommon.dto.ResponseResult;
 import com.linduohui.internalcommon.response.NumberCodeResponse;
 import com.linduohui.internalcommon.response.TokenResponse;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -39,13 +41,23 @@ public class VerificationCodeService {
         //将验证码存入redis
         System.out.println("将验证码存入redis");
         //key value 过期时间
-        String key = verificationCodePrefix+phone;
+        String key = generateKey(phone);
         //存入redis
         stringRedisTemplate.opsForValue().set(key,numberCode+"",2, TimeUnit.MINUTES);
 
         //通过短信服务商，将对应的验证码发送到手机上，阿里短信服务，腾讯短信通，华信，容联
         return ResponseResult.success("");
     }
+
+    /**
+     * 生成Key
+     * @param phone
+     * @return
+     */
+    private String generateKey(String phone){
+        return verificationCodePrefix+phone;
+    }
+
 
     /**
      * 校验验证码
@@ -57,10 +69,18 @@ public class VerificationCodeService {
 
         //根据手机号，查询redis中的验证码
         System.out.println("根据手机号，查询redis中的验证码");
-
+        String key = generateKey(passengerPhone);
+        String numberCodeRedis = stringRedisTemplate.opsForValue().get(key);
+        System.out.println("Redis中拿到的验证码："+numberCodeRedis);
         //校验验证码
         System.out.println("校验验证码");
+        if(StringUtils.isBlank(numberCodeRedis)){
+            return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(),CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
+        }
 
+        if(!numberCodeRedis.trim().equals(verificationCode.trim())){
+            return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(),CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
+        }
         //判断原来是否有用户，并进行相应处理
         System.out.println("判断原来是否有用户，并进行相应处理");
 
