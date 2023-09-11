@@ -1,8 +1,8 @@
 package com.linduohui.apipassenger.controller;
 
-import com.linduohui.apipassenger.request.VerificationCodeDTO;
 import com.linduohui.apipassenger.service.VerificationCodeService;
 import com.linduohui.internalcommon.dto.ResponseResult;
+import com.linduohui.internalcommon.request.VerificationCodeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
