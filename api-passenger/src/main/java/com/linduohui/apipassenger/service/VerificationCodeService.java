@@ -1,8 +1,10 @@
 package com.linduohui.apipassenger.service;
 
+import com.linduohui.apipassenger.remote.ServicePassengerUserClient;
 import com.linduohui.apipassenger.remote.ServiceVerificationCodeClient;
 import com.linduohui.internalcommon.constant.CommonStatusEnum;
 import com.linduohui.internalcommon.dto.ResponseResult;
+import com.linduohui.internalcommon.request.VerificationCodeDTO;
 import com.linduohui.internalcommon.response.NumberCodeResponse;
 import com.linduohui.internalcommon.response.TokenResponse;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +23,9 @@ public class VerificationCodeService {
 
     @Autowired
     private ServiceVerificationCodeClient serviceVerificationCodeClient;
+
+    @Autowired
+    private ServicePassengerUserClient servicePassengerUserClient;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -82,7 +87,9 @@ public class VerificationCodeService {
             return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(),CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
         }
         //判断原来是否有用户，并进行相应处理
-        System.out.println("判断原来是否有用户，并进行相应处理");
+        VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
+        verificationCodeDTO.setPassengerPhone(passengerPhone);
+        servicePassengerUserClient.loginOrRegister(verificationCodeDTO);
 
         //颁发令牌
         System.out.println("颁发令牌");

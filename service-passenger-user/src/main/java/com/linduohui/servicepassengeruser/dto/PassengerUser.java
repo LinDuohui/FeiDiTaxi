@@ -15,6 +15,7 @@ public class PassengerUser {
     private LocalDateTime gmtModified;
     private String passengerPhone;
     private String passengerName;
+    private byte passengerGender;
     private byte state;
-    private byte profilePhoto;
+    private String profilePhoto;
 }
