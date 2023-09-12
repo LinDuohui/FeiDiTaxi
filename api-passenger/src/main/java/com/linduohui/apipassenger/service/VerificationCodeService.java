@@ -3,10 +3,12 @@ package com.linduohui.apipassenger.service;
 import com.linduohui.apipassenger.remote.ServicePassengerUserClient;
 import com.linduohui.apipassenger.remote.ServiceVerificationCodeClient;
 import com.linduohui.internalcommon.constant.CommonStatusEnum;
+import com.linduohui.internalcommon.constant.IdentityConstant;
 import com.linduohui.internalcommon.dto.ResponseResult;
 import com.linduohui.internalcommon.request.VerificationCodeDTO;
 import com.linduohui.internalcommon.response.NumberCodeResponse;
 import com.linduohui.internalcommon.response.TokenResponse;
+import com.linduohui.internalcommon.util.JwtUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -93,8 +95,9 @@ public class VerificationCodeService {
 
         //颁发令牌
         System.out.println("颁发令牌");
+        String token = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
         TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken("token");
+        tokenResponse.setToken(token);
         return ResponseResult.success(tokenResponse);
     }
 }
