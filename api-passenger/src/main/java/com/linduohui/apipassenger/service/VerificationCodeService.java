@@ -9,6 +9,7 @@ import com.linduohui.internalcommon.request.VerificationCodeDTO;
 import com.linduohui.internalcommon.response.NumberCodeResponse;
 import com.linduohui.internalcommon.response.TokenResponse;
 import com.linduohui.internalcommon.util.JwtUtils;
+import com.linduohui.internalcommon.util.RedisPrefixUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,8 +32,6 @@ public class VerificationCodeService {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-    //乘客验证码的前缀
-    private String verificationCodePrefix = "passenger-verification-code-";
 
     /**
      * 生成验证码
@@ -48,21 +47,12 @@ public class VerificationCodeService {
         //将验证码存入redis
         System.out.println("将验证码存入redis");
         //key value 过期时间
-        String key = generateKey(phone);
+        String key = RedisPrefixUtils.generateKey(phone);
         //存入redis
         stringRedisTemplate.opsForValue().set(key,numberCode+"",2, TimeUnit.MINUTES);
 
         //通过短信服务商，将对应的验证码发送到手机上，阿里短信服务，腾讯短信通，华信，容联
         return ResponseResult.success("");
-    }
-
-    /**
-     * 生成Key
-     * @param phone
-     * @return
-     */
-    private String generateKey(String phone){
-        return verificationCodePrefix+phone;
     }
 
 
@@ -76,7 +66,7 @@ public class VerificationCodeService {
 
         //根据手机号，查询redis中的验证码
         System.out.println("根据手机号，查询redis中的验证码");
-        String key = generateKey(passengerPhone);
+        String key = RedisPrefixUtils.generateKey(passengerPhone);
         String numberCodeRedis = stringRedisTemplate.opsForValue().get(key);
         System.out.println("Redis中拿到的验证码："+numberCodeRedis);
         //校验验证码
@@ -96,6 +86,12 @@ public class VerificationCodeService {
         //颁发令牌
         System.out.println("颁发令牌");
         String token = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
+        System.out.println("令牌："+token);
+        //token 存入redis
+        String tokenKey = RedisPrefixUtils.generateTokenKey(passengerPhone,IdentityConstant.PASSENGER_IDENTITY);
+        stringRedisTemplate.opsForValue().set(tokenKey,token,30,TimeUnit.DAYS);
+        System.out.println("token存入redis");
+
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(token);
         return ResponseResult.success(tokenResponse);
