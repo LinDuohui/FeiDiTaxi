@@ -3,6 +3,7 @@ package com.linduohui.apipassenger.interceptor;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.linduohui.internalcommon.constant.TokenConstants;
 import com.linduohui.internalcommon.dto.ResponseResult;
 import com.linduohui.internalcommon.dto.TokenResult;
 import com.linduohui.internalcommon.util.JwtUtils;
@@ -30,22 +31,7 @@ public class JWTInterceptor implements HandlerInterceptor {
         String resultString = "";
         String token = request.getHeader("Authorization");
 
-        TokenResult tokenResult = null;
-        try {
-            tokenResult = JwtUtils.parseToken(token);
-        } catch (SignatureVerificationException e) {
-            resultString = "token sign error";
-            result = false;
-        } catch (TokenExpiredException e) {
-            resultString = "token time out";
-            result = false;
-        } catch (AlgorithmMismatchException e) {
-            resultString = "token SignatureVerificationException";
-            result = false;
-        } catch (Exception e) {
-            resultString = "token valid";
-            result = false;
-        }
+        TokenResult tokenResult = JwtUtils.checkToken(token);
         if(tokenResult == null){
             resultString = "token valid";
             result = false;
@@ -53,9 +39,9 @@ public class JWTInterceptor implements HandlerInterceptor {
             //从redis中获取token
             String phone = tokenResult.getPhone();
             String identity = tokenResult.getIdentity();
-            String tokenKey = RedisPrefixUtils.generateTokenKey(phone,identity);
-            String tokenRedis = stringRedisTemplate.opsForValue().get(tokenKey);
-            if("".equals(tokenRedis)||!tokenRedis.trim().equals(token.trim())){
+            String accessTokenKey = RedisPrefixUtils.generateTokenKey(phone,identity, TokenConstants.ACCESS_TOKEN);
+            String accessTokenRedis = stringRedisTemplate.opsForValue().get(accessTokenKey);
+            if("".equals(accessTokenRedis)||(!accessTokenRedis.trim().equals(token.trim()))){
                 resultString = "token valid";
                 result = false;
             }

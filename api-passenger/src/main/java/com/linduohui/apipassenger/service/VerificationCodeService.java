@@ -4,6 +4,7 @@ import com.linduohui.apipassenger.remote.ServicePassengerUserClient;
 import com.linduohui.apipassenger.remote.ServiceVerificationCodeClient;
 import com.linduohui.internalcommon.constant.CommonStatusEnum;
 import com.linduohui.internalcommon.constant.IdentityConstant;
+import com.linduohui.internalcommon.constant.TokenConstants;
 import com.linduohui.internalcommon.dto.ResponseResult;
 import com.linduohui.internalcommon.request.VerificationCodeDTO;
 import com.linduohui.internalcommon.response.NumberCodeResponse;
@@ -85,15 +86,20 @@ public class VerificationCodeService {
 
         //颁发令牌
         System.out.println("颁发令牌");
-        String token = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
-        System.out.println("令牌："+token);
+        String accessToken = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.ACCESS_TOKEN);
+        String refreshToken = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.REFRESH_TOKEN);
+        System.out.println("accessToken令牌："+accessToken);
+        System.out.println("refreshToken令牌："+refreshToken);
         //token 存入redis
-        String tokenKey = RedisPrefixUtils.generateTokenKey(passengerPhone,IdentityConstant.PASSENGER_IDENTITY);
-        stringRedisTemplate.opsForValue().set(tokenKey,token,30,TimeUnit.DAYS);
+        String accessTokenKey = RedisPrefixUtils.generateTokenKey(passengerPhone,IdentityConstant.PASSENGER_IDENTITY,TokenConstants.ACCESS_TOKEN);
+        stringRedisTemplate.opsForValue().set(accessTokenKey,accessToken,30,TimeUnit.DAYS);
+        String refreshTokenKey = RedisPrefixUtils.generateTokenKey(passengerPhone,IdentityConstant.PASSENGER_IDENTITY,TokenConstants.REFRESH_TOKEN);
+        stringRedisTemplate.opsForValue().set(refreshTokenKey,refreshToken,31,TimeUnit.DAYS);//refreshTokenKey更晚过期
         System.out.println("token存入redis");
 
         TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken(token);
+        tokenResponse.setAccessToken(accessToken);
+        tokenResponse.setRefreshToken(refreshToken);
         return ResponseResult.success(tokenResponse);
     }
 }
