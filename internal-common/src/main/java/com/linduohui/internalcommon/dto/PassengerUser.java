@@ -1,4 +1,4 @@
-package com.linduohui.servicepassengeruser.dto;
+package com.linduohui.internalcommon.dto;
 
 import lombok.Data;
 
