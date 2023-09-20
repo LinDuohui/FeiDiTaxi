@@ -24,7 +24,6 @@ public class MapDirectionClient {
     public DirectionResponse direction(String depLongitude, String depLatitude,String destLongitude,String destLatitude){
         //组装请求调用url接口
         StringBuilder urlBuild = new StringBuilder();
-        //https://restapi.amap.com/v3/direction/driving?origin=116.481028,39.989643&destination=116.465302,40.004717&extensions=all&output=xml&key=a31da83fb0763b16dbf051e605407b70
         urlBuild.append(AmapConfigConstants.DIRECTION_URL);
         urlBuild.append("?origin=");
         urlBuild.append(depLongitude);
